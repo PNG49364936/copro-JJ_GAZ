@@ -1,0 +1,74 @@
+<h1 class="mb-4">Tableau des coûts de consommation gaz</h1>
+
+<div class="table-responsive">
+  <table class="table table-bordered table-sm" style="font-size: 0.85rem;">
+    <thead>
+      <tr class="table-dark text-center">
+        <th rowspan="2" class="align-middle" style="min-width: 100px;">Période</th>
+        <% @mois.each do |nom, code| %>
+          <% next if code == "septembre" || code == "mai" %>
+          <th colspan="5" class="text-center"><%= nom.upcase %></th>
+        <% end %>
+        <th colspan="5" class="text-center table-primary">TOTAL</th>
+      </tr>
+      <tr class="table-secondary text-center">
+        <% (@mois.size - 2).times do %>
+          <th style="min-width: 70px;">Volume</th>
+          <th style="min-width: 70px;">Vol HT</th>
+          <th style="min-width: 80px;">Total TTC</th>
+          <th style="min-width: 70px;">m3 HT</th>
+          <th style="min-width: 70px;">m3 TTC</th>
+        <% end %>
+        <th style="min-width: 70px;" class="table-primary">Volume</th>
+        <th style="min-width: 70px;" class="table-primary">Vol HT</th>
+        <th style="min-width: 80px;" class="table-primary">Total TTC</th>
+        <th style="min-width: 70px;" class="table-primary">m3 HT</th>
+        <th style="min-width: 70px;" class="table-primary">m3 TTC</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @periodes_budgetaires.each do |nom, code| %>
+        <tr>
+          <td class="table-light fw-bold"><%= nom %></td>
+          <% @mois.each do |mois_nom, mois_code| %>
+            <% next if mois_code == "septembre" || mois_code == "mai" %>
+            <% facture = @factures_par_periode[code][mois_code] %>
+            <% if facture %>
+              <td class="text-end"><%= number_with_precision(facture.consommation_m3, precision: 0, delimiter: " ") %></td>
+              <td class="text-end"><%= number_with_precision(facture.montant_ht, precision: 0, delimiter: " ") %></td>
+              <td class="text-end table-info"><%= number_with_precision(facture.montant_ttc, precision: 0, delimiter: " ") %></td>
+              <td class="text-end table-success"><%= facture.consommation_m3.to_f > 0 ? number_with_precision(facture.montant_ht / facture.consommation_m3, precision: 2) : "-" %></td>
+              <td class="text-end table-warning"><%= facture.consommation_m3.to_f > 0 ? number_with_precision(facture.montant_ttc / facture.consommation_m3, precision: 2) : "-" %></td>
+            <% else %>
+              <td class="text-center text-muted">-</td>
+              <td class="text-center text-muted">-</td>
+              <td class="text-center text-muted">-</td>
+              <td class="text-center text-muted">-</td>
+              <td class="text-center text-muted">-</td>
+            <% end %>
+          <% end %>
+          <%
+            total_volume = 0
+            total_ht = 0
+            total_ttc = 0
+            @mois.each do |_, mois_code|
+              next if mois_code == "septembre" || mois_code == "mai"
+              f = @factures_par_periode[code][mois_code]
+              if f
+                total_volume += f.consommation_m3 || 0
+                total_ht += f.montant_ht || 0
+                total_ttc += f.montant_ttc || 0
+              end
+            end
+          %>
+          <td class="text-end table-primary fw-bold"><%= number_with_precision(total_volume, precision: 0, delimiter: " ") %></td>
+          <td class="text-end table-primary fw-bold"><%= number_with_precision(total_ht, precision: 0, delimiter: " ") %></td>
+          <td class="text-end table-primary fw-bold"><%= number_with_precision(total_ttc, precision: 0, delimiter: " ") %></td>
+          <td class="text-end table-primary fw-bold"><%= total_volume > 0 ? number_with_precision(total_ht / total_volume, precision: 2) : "-" %></td>
+          <td class="text-end table-primary fw-bold"><%= total_volume > 0 ? number_with_precision(total_ttc / total_volume, precision: 2) : "-" %></td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>
+

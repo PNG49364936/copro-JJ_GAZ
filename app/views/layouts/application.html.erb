@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <title>Gestion Gaz - SDC Jean Jaurès</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+
+    <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
+    <%= javascript_importmap_tags %>
+  </head>
+
+  <body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary mb-4">
+      <div class="container">
+        <a class="navbar-brand" href="<%= root_path %>">
+          <i class="bi bi-fuel-pump"></i> Gestion Gaz
+        </a>
+        <div class="navbar-nav ms-auto d-flex gap-2">
+          <%= link_to "Tableau coûts", tableau_couts_path, class: "btn btn-outline-light" %>
+          <%= link_to "Nouvelle facture", new_facture_path, class: "btn btn-outline-light" %>
+        </div>
+      </div>
+    </nav>
+
+    <main class="container">
+      <% if notice.present? %>
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+          <%= notice %>
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fermer"></button>
+        </div>
+      <% end %>
+
+      <% if alert.present? %>
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+          <%= alert %>
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fermer"></button>
+        </div>
+      <% end %>
+
+      <%= yield %>
+    </main>
+
+    <footer class="container mt-5 py-3 border-top text-muted text-center">
+      <small>SDC Jean Jaurès - Gestion des coûts de consommation gaz</small>
+    </footer>
+  </body>
+</html>

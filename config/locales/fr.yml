@@ -1,0 +1,93 @@
+fr:
+  date:
+    formats:
+      default: "%d/%m/%Y"
+      short: "%d/%m/%y"
+      long: "%d %B %Y"
+    day_names:
+      - dimanche
+      - lundi
+      - mardi
+      - mercredi
+      - jeudi
+      - vendredi
+      - samedi
+    abbr_day_names:
+      - dim
+      - lun
+      - mar
+      - mer
+      - jeu
+      - ven
+      - sam
+    month_names:
+      - ~
+      - janvier
+      - février
+      - mars
+      - avril
+      - mai
+      - juin
+      - juillet
+      - août
+      - septembre
+      - octobre
+      - novembre
+      - décembre
+    abbr_month_names:
+      - ~
+      - jan.
+      - fév.
+      - mars
+      - avr.
+      - mai
+      - juin
+      - juil.
+      - août
+      - sept.
+      - oct.
+      - nov.
+      - déc.
+  time:
+    formats:
+      default: "%d/%m/%Y %H:%M"
+      short: "%d/%m %H:%M"
+      long: "%d %B %Y %H:%M"
+  number:
+    currency:
+      format:
+        delimiter: " "
+        separator: ","
+        precision: 2
+        unit: "€"
+        format: "%n %u"
+    format:
+      delimiter: " "
+      separator: ","
+      precision: 2
+  activerecord:
+    models:
+      facture: Facture
+    attributes:
+      facture:
+        date_facture: Date de facture
+        periode_debut: Début de période
+        periode_fin: Fin de période
+        index_precedent: Index précédent
+        index_actuel: Index actuel
+        consommation_m3: Consommation (m³)
+        montant_ht: Montant HT
+        montant_ttc: Montant TTC
+        prix_unitaire_m3: Prix unitaire (€/m³)
+        notes: Notes
+    errors:
+      messages:
+        blank: ne peut pas être vide
+        invalid: n'est pas valide
+        not_a_number: n'est pas un nombre
+        greater_than_or_equal_to: doit être supérieur ou égal à %{count}
+  helpers:
+    submit:
+      create: Créer
+      update: Mettre à jour
+      submit: Enregistrer

@@ -1,0 +1,70 @@
+<div class="row">
+  <div class="col-md-8">
+    <%= form_with(model: facture, class: "needs-validation") do |form| %>
+      <% if facture.errors.any? %>
+        <div class="alert alert-danger">
+          <h4><%= pluralize(facture.errors.count, "erreur") %> empêche(nt) la sauvegarde :</h4>
+          <ul class="mb-0">
+            <% facture.errors.full_messages.each do |message| %>
+              <li><%= message %></li>
+            <% end %>
+          </ul>
+        </div>
+      <% end %>
+
+      <div class="card mb-4">
+        <div class="card-header">
+          <h5>Informations de la facture</h5>
+        </div>
+        <div class="card-body">
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <%= form.label :periode_budgetaire, "Période budgétaire", class: "form-label" %>
+              <%= form.select :periode_budgetaire, Facture::PERIODES_BUDGETAIRES, { prompt: "Sélectionnez une période" }, { class: "form-select", required: true } %>
+            </div>
+            <div class="col-md-6 mb-3">
+              <%= form.label :periode, "Période", class: "form-label" %>
+              <%= form.select :periode, Facture::PERIODES, { prompt: "Sélectionnez un mois" }, { class: "form-select", required: true } %>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card mb-4">
+        <div class="card-header">
+          <h5>Données facture</h5>
+        </div>
+        <div class="card-body">
+          <div class="row">
+            <div class="col-md-4 mb-3">
+              <%= form.label :consommation_m3, "Volume en m³", class: "form-label" %>
+              <%= form.number_field :consommation_m3, class: "form-control", step: "0.01", required: true, placeholder: "ex: 150.00" %>
+            </div>
+            <div class="col-md-4 mb-3">
+              <%= form.label :montant_ht, "Conso HT (€)", class: "form-label" %>
+              <%= form.number_field :montant_ht, class: "form-control", step: "0.01", required: true, placeholder: "ex: 150.00" %>
+            </div>
+            <div class="col-md-4 mb-3">
+              <%= form.label :montant_ttc, "Facture TTC (€)", class: "form-label" %>
+              <%= form.number_field :montant_ttc, class: "form-control", step: "0.01", required: true, placeholder: "ex: 180.00" %>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card mb-4">
+        <div class="card-header">
+          <h5>Notes</h5>
+        </div>
+        <div class="card-body">
+          <%= form.text_area :notes, class: "form-control", rows: 3, placeholder: "Notes ou commentaires sur cette facture..." %>
+        </div>
+      </div>
+
+      <div class="d-flex gap-2">
+        <%= form.submit "Enregistrer", class: "btn btn-primary btn-lg" %>
+        <%= link_to "Annuler", factures_path, class: "btn btn-secondary btn-lg" %>
+      </div>
+    <% end %>
+  </div>
+</div>

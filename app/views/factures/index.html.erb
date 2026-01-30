@@ -1,0 +1,56 @@
+<h1 class="mb-4">Gestion Gaz - SDC Jean Jaurès</h1>
+
+<% @periodes_budgetaires.each do |nom, code| %>
+  <% totaux = @totaux_par_periode[code] %>
+  <div class="card mb-4">
+    <div class="card-header bg-primary text-white">
+      <h5 class="mb-0"><%= nom %></h5>
+    </div>
+    <div class="card-body">
+      <div class="row">
+        <div class="col-md-3">
+          <div class="card text-bg-light h-100">
+            <div class="card-body text-center">
+              <h6 class="card-subtitle mb-2 text-muted">Volume</h6>
+              <p class="card-text display-6"><%= number_with_precision(totaux[:volume], precision: 0, delimiter: " ") %></p>
+              <small class="text-muted">m³</small>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="card text-bg-light h-100">
+            <div class="card-body text-center">
+              <h6 class="card-subtitle mb-2 text-muted">Total TTC</h6>
+              <p class="card-text display-6"><%= number_with_precision(totaux[:total_ttc], precision: 0, delimiter: " ") %></p>
+              <small class="text-muted">€</small>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="card text-bg-success h-100">
+            <div class="card-body text-center">
+              <h6 class="card-subtitle mb-2">m³ HT</h6>
+              <p class="card-text display-6"><%= number_with_precision(totaux[:m3_ht], precision: 2) %></p>
+              <small>€/m³</small>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="card text-bg-warning h-100">
+            <div class="card-body text-center">
+              <h6 class="card-subtitle mb-2">m³ TTC</h6>
+              <p class="card-text display-6"><%= number_with_precision(totaux[:m3_ttc], precision: 2) %></p>
+              <small>€/m³</small>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+<% end %>
+
+<% if @factures.empty? %>
+  <div class="alert alert-info">
+    Aucune facture enregistrée. <%= link_to "Ajouter une facture", new_facture_path %>.
+  </div>
+<% end %>
