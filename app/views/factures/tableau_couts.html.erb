@@ -28,36 +28,56 @@
     </thead>
     <tbody>
       <% @periodes_budgetaires.each do |nom, code| %>
+        <% is_total_only = @periodes_total_only.key?(code) %>
         <tr>
           <td class="table-light fw-bold"><%= nom %></td>
           <% @mois.each do |mois_nom, mois_code| %>
-            <% next if mois_code == "septembre" || mois_code == "mai" %>
-            <% facture = @factures_par_periode[code][mois_code] %>
-            <% if facture %>
-              <td class="text-end"><%= number_with_precision(facture.consommation_m3, precision: 0, delimiter: " ") %></td>
-              <td class="text-end"><%= number_with_precision(facture.montant_ht, precision: 0, delimiter: " ") %></td>
-              <td class="text-end table-info"><%= number_with_precision(facture.montant_ttc, precision: 0, delimiter: " ") %></td>
-              <td class="text-end table-success"><%= facture.consommation_m3.to_f > 0 ? number_with_precision(facture.montant_ht / facture.consommation_m3, precision: 2) : "-" %></td>
-              <td class="text-end table-warning"><%= facture.consommation_m3.to_f > 0 ? number_with_precision(facture.montant_ttc / facture.consommation_m3, precision: 2) : "-" %></td>
+            <% next if mois_code == "septembre" || mois_code == "mai" || mois_code == "total" %>
+            <% if is_total_only %>
+              <%# Période avec données totales uniquement - colonnes grisées %>
+              <td class="text-center text-muted bg-secondary bg-opacity-10">-</td>
+              <td class="text-center text-muted bg-secondary bg-opacity-10">-</td>
+              <td class="text-center text-muted bg-secondary bg-opacity-10">-</td>
+              <td class="text-center text-muted bg-secondary bg-opacity-10">-</td>
+              <td class="text-center text-muted bg-secondary bg-opacity-10">-</td>
             <% else %>
-              <td class="text-center text-muted">-</td>
-              <td class="text-center text-muted">-</td>
-              <td class="text-center text-muted">-</td>
-              <td class="text-center text-muted">-</td>
-              <td class="text-center text-muted">-</td>
+              <% facture = @factures_par_periode[code][mois_code] %>
+              <% if facture %>
+                <td class="text-end"><%= number_with_precision(facture.consommation_m3, precision: 0, delimiter: " ") %></td>
+                <td class="text-end"><%= number_with_precision(facture.montant_ht, precision: 0, delimiter: " ") %></td>
+                <td class="text-end table-info"><%= number_with_precision(facture.montant_ttc, precision: 0, delimiter: " ") %></td>
+                <td class="text-end table-success"><%= facture.consommation_m3.to_f > 0 ? number_with_precision(facture.montant_ht / facture.consommation_m3, precision: 2) : "-" %></td>
+                <td class="text-end table-warning"><%= facture.consommation_m3.to_f > 0 ? number_with_precision(facture.montant_ttc / facture.consommation_m3, precision: 2) : "-" %></td>
+              <% else %>
+                <td class="text-center text-muted">-</td>
+                <td class="text-center text-muted">-</td>
+                <td class="text-center text-muted">-</td>
+                <td class="text-center text-muted">-</td>
+                <td class="text-center text-muted">-</td>
+              <% end %>
             <% end %>
           <% end %>
           <%
             total_volume = 0
             total_ht = 0
             total_ttc = 0
-            @mois.each do |_, mois_code|
-              next if mois_code == "septembre" || mois_code == "mai"
-              f = @factures_par_periode[code][mois_code]
-              if f
-                total_volume += f.consommation_m3 || 0
-                total_ht += f.montant_ht || 0
-                total_ttc += f.montant_ttc || 0
+
+            if is_total_only
+              # Utiliser les valeurs de la facture "total"
+              facture_total = @periodes_total_only[code]
+              total_volume = facture_total.consommation_m3 || 0
+              total_ht = facture_total.montant_ht || 0
+              total_ttc = facture_total.montant_ttc || 0
+            else
+              # Calculer à partir des factures mensuelles
+              @mois.each do |_, mois_code|
+                next if mois_code == "septembre" || mois_code == "mai" || mois_code == "total"
+                f = @factures_par_periode[code][mois_code]
+                if f
+                  total_volume += f.consommation_m3 || 0
+                  total_ht += f.montant_ht || 0
+                  total_ttc += f.montant_ttc || 0
+                end
               end
             end
           %>

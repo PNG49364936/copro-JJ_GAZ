@@ -1,5 +1,6 @@
 class Facture < ApplicationRecord
   PERIODES = [
+    ["Total annuel", "total"],
     ["Septembre", "septembre"],
     ["Octobre", "octobre"],
     ["Novembre", "novembre"],
@@ -12,6 +13,7 @@ class Facture < ApplicationRecord
   ].freeze
 
   PERIODES_BUDGETAIRES = [
+    ["2023/2024", "2023_2024"],
     ["2024/2025", "2024_2025"],
     ["2025/2026", "2025_2026"],
     ["2026/2027", "2026_2027"]

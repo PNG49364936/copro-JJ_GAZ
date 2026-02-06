@@ -12,7 +12,7 @@
           <div class="card text-bg-light h-100">
             <div class="card-body text-center">
               <h6 class="card-subtitle mb-2 text-muted">Volume</h6>
-              <p class="card-text display-6"><%= number_with_precision(totaux[:volume], precision: 0, delimiter: " ") %></p>
+              <p class="card-text display-6" <%= 'style=filter:blur(5px);'.html_safe if code == '2023_2024' %>><%= number_with_precision(totaux[:volume], precision: 0, delimiter: " ") %></p>
               <small class="text-muted">m³</small>
             </div>
           </div>
@@ -21,7 +21,7 @@
           <div class="card text-bg-light h-100">
             <div class="card-body text-center">
               <h6 class="card-subtitle mb-2 text-muted">Total TTC</h6>
-              <p class="card-text display-6"><%= number_with_precision(totaux[:total_ttc], precision: 0, delimiter: " ") %></p>
+              <p class="card-text display-6" <%= 'style=filter:blur(5px);'.html_safe if code == '2023_2024' %>><%= number_with_precision(totaux[:total_ttc], precision: 0, delimiter: " ") %></p>
               <small class="text-muted">€</small>
             </div>
           </div>

@@ -2,6 +2,15 @@
 
 Facture.destroy_all
 
+# 2023/2024 - Données annuelles uniquement
+Facture.create!(
+  periode_budgetaire: "2023_2024",
+  periode: "total",
+  consommation_m3: 7396,
+  montant_ht: 3370,
+  montant_ttc: 8512
+)
+
 # 2024/2025
 donnees_2024_2025 = [
   { periode: "octobre", consommation_m3: 1181, montant_ht: 811, montant_ttc: 2202 },
