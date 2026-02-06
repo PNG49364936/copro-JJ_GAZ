@@ -14,7 +14,9 @@
             <% @periodes_comparables.each do |code, data| %>
               <option value="<%= code %>"
                       data-mois="<%= data[:mois_disponibles].to_json %>"
-                      <%= 'selected' if @periode1 == code %>>
+                      <%= 'disabled' if code == '2023_2024' %>
+                      <%= 'selected' if @periode1 == code %>
+                      <%= 'style=background-color:#f8f9fa;color:#6c757d;' if code == '2023_2024' %>>
                 <%= data[:nom] %>
               </option>
             <% end %>
@@ -27,7 +29,9 @@
             <% @periodes_comparables.each do |code, data| %>
               <option value="<%= code %>"
                       data-mois="<%= data[:mois_disponibles].to_json %>"
-                      <%= 'selected' if @periode2 == code %>>
+                      <%= 'disabled' if code == '2023_2024' %>
+                      <%= 'selected' if @periode2 == code %>
+                      <%= 'style=background-color:#f8f9fa;color:#6c757d;' if code == '2023_2024' %>>
                 <%= data[:nom] %>
               </option>
             <% end %>
@@ -194,11 +198,11 @@
   </div>
 
   <!-- Résumé visuel -->Sélection des périodes à comparer
-  <div class="row">
-    <div class="col-lg-3 col-md-6">
+  <div class="row row-cols-1 row-cols-md-3 row-cols-lg-5">
+    <div class="col">
       <div class="card <%= @resultats[:ecarts][:volume] > 0 ? 'border-danger' : 'border-success' %>">
         <div class="card-body text-center">
-          <h6>Évolution Volume</h6>
+          <h6>Évolution Volume m3</h6>
           <p class="display-6 <%= @resultats[:evolution][:volume] > 0 ? 'text-danger' : 'text-success' %>">
             <%= @resultats[:evolution][:volume] > 0 ? '+' : '' %><%= number_with_precision(@resultats[:evolution][:volume], precision: 1) %>%
           </p>
@@ -208,10 +212,23 @@
         </div>
       </div>
     </div>
-    <div class="col-lg-3 col-md-6">
+    <div class="col">
+      <div class="card <%= @resultats[:ecarts][:vol_ht] > 0 ? 'border-danger' : 'border-success' %>">
+        <div class="card-body text-center">
+          <h6>Évolution Total € HT</h6>
+          <p class="display-6 <%= @resultats[:evolution][:vol_ht] > 0 ? 'text-danger' : 'text-success' %>">
+            <%= @resultats[:evolution][:vol_ht] > 0 ? '+' : '' %><%= number_with_precision(@resultats[:evolution][:vol_ht], precision: 1) %>%
+          </p>
+          <small class="text-muted">
+            <%= number_with_precision(@resultats[:ecarts][:vol_ht], precision: 0, delimiter: " ") %> €
+          </small>
+        </div>
+      </div>
+    </div>
+    <div class="col">
       <div class="card <%= @resultats[:ecarts][:total_ttc] > 0 ? 'border-danger' : 'border-success' %>">
         <div class="card-body text-center">
-          <h6>Évolution Total TTC</h6>
+          <h6>Évolution Total € TTC</h6>
           <p class="display-6 <%= @resultats[:evolution][:total_ttc] > 0 ? 'text-danger' : 'text-success' %>">
             <%= @resultats[:evolution][:total_ttc] > 0 ? '+' : '' %><%= number_with_precision(@resultats[:evolution][:total_ttc], precision: 1) %>%
           </p>
@@ -221,7 +238,7 @@
         </div>
       </div>
     </div>
-    <div class="col-lg-3 col-md-6">
+    <div class="col">
       <div class="card <%= @resultats[:ecarts][:m3_ht] > 0 ? 'border-danger' : 'border-success' %>">
         <div class="card-body text-center">
           <h6>Évolution €/m³ HT</h6>
@@ -234,7 +251,7 @@
         </div>
       </div>
     </div>
-    <div class="col-lg-3 col-md-6">
+    <div class="col">
       <div class="card <%= @resultats[:ecarts][:m3_ttc] > 0 ? 'border-danger' : 'border-success' %>">
         <div class="card-body text-center">
           <h6>Évolution €/m³ TTC</h6>
