@@ -60,3 +60,15 @@ Modification à apporter dans les menus déroulants :
 Pour rappel, pour 2023/2024, il n'existe pas de données mensuelles mais seulement annuelles donc :
 - periode 1 doit être en gris clair(à l identique du font mois debut) et non sélectionnable.
 - période 2 doit être en gris clair(à l identique du font mois debut) et non sélectionnable.
+
+06/02/2026_1
+Il y a 2 cards dont le contenu doit être "blur" de façon à ce que l'utilisateur ne puisse lire les données.
+ceci car il s agit de données qui ont été renseignées directement et ne sont pas la somme des périodes octobre à avril.
+
+Dans index.html.erb
+
+<h5 class="mb-0">2023/2024</h5>
+<h6 class="card-subtitle mb-2 text-muted">Volume</h6>
+              <p class="card-text display-6"><%= number_with_precision(totaux[:volume], precision: 0, delimiter: " ") %></p>
+<h6 class="card-subtitle mb-2 text-muted">Total TTC</h6>
+              <p class="card-text display-6"><%= number_with_precision(totaux[:total_ttc], precision: 0, delimiter: " ") %></p>

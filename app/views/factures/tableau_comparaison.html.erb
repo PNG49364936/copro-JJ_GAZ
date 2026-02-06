@@ -14,9 +14,7 @@
             <% @periodes_comparables.each do |code, data| %>
               <option value="<%= code %>"
                       data-mois="<%= data[:mois_disponibles].to_json %>"
-                      <%= 'disabled' if code == '2023_2024' %>
-                      <%= 'selected' if @periode1 == code %>
-                      <%= 'style=background-color:#f8f9fa;color:#6c757d;' if code == '2023_2024' %>>
+                      <%= 'selected' if @periode1 == code %>>
                 <%= data[:nom] %>
               </option>
             <% end %>
@@ -29,9 +27,7 @@
             <% @periodes_comparables.each do |code, data| %>
               <option value="<%= code %>"
                       data-mois="<%= data[:mois_disponibles].to_json %>"
-                      <%= 'disabled' if code == '2023_2024' %>
-                      <%= 'selected' if @periode2 == code %>
-                      <%= 'style=background-color:#f8f9fa;color:#6c757d;' if code == '2023_2024' %>>
+                      <%= 'selected' if @periode2 == code %>>
                 <%= data[:nom] %>
               </option>
             <% end %>
@@ -197,7 +193,7 @@
     </div>
   </div>
 
-  <!-- Résumé visuel -->
+  <!-- Résumé visuel -->Sélection des périodes à comparer
   <div class="row">
     <div class="col-lg-3 col-md-6">
       <div class="card <%= @resultats[:ecarts][:volume] > 0 ? 'border-danger' : 'border-success' %>">
