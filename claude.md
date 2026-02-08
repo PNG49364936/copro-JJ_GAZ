@@ -41,20 +41,44 @@ Application Rails de gestion des coûts de consommation de gaz avec calcul du co
 
 ### Tableau des coûts (/tableau_couts)
 - Tableau type Excel avec colonnes par mois (Oct à Avr)
+- **7 colonnes mensuelles** : Octobre, Novembre, Décembre, Janvier, Février, Mars, Avril
 - Pour chaque mois : Volume, Vol HT, Total TTC, m³ HT, m³ TTC
-- Colonne Total avec sommes et moyennes
+- **Colonne TOTAL** (en fin de tableau) : sommes et moyennes de la période
+- Période "total" exclue de l'affichage (utilisée uniquement pour 2023/2024)
+- Alignement dynamique : itération sur les mois réellement affichés
 
 ### Comparaison des périodes (/tableau_comparaison)
-- Comparaison de deux périodes budgétaires
-- Sélection des mois de début et fin (plage de comparaison)
-- **Période 2023/2024** : non sélectionnable (grisée, disabled) car pas de données mensuelles
+
+**Deux modes de comparaison** (formulaires côte à côte) :
+
+#### Mode "Années complètes" (card vert)
+- Compare des années budgétaires entières (Oct à Avr automatiquement)
+- **Sélectionnable si** : 7 mois complets (Oct-Avr) OU période "Total only"
+- **Toutes les périodes affichées** dans le dropdown :
+  - 2023/2024 (Total) : sélectionnable
+  - 2024/2025 : sélectionnable
+  - 2025/2026 (3/7 mois) : grisée, disabled
+  - 2026/2027 (0/7 mois) : grisée, disabled
+- Validation : alerte si années identiques
+- **Exception 2023/2024** : si sélectionné, seuls €/m³ HT et €/m³ TTC sont comparés (Vol, HT, TTC non comparables car alimentés différemment)
+
+#### Mode "Périodes personnalisées" (card bleu)
+- Sélection libre des mois de début et fin
+- **Période 2023/2024** : non sélectionnable (grisée, disabled)
+- Validation : alerte si périodes identiques
+- Filtrage dynamique : seuls les mois avec données pour les deux périodes sont comparables
+
+#### Affichage des résultats
 - Tableau compact avec données par mois : Vol, HT, TTC, €m3/HT, €m3TTC
 - Ligne Écart : différences entre périodes
 - Ligne % : évolution en pourcentage
 - Colonne TOT : totaux de la plage sélectionnée
-- **4 Cards résumé** : Évolution Volume, Total TTC, €/m³ HT, €/m³ TTC
+- **Cards résumé** :
+  - **Normal (5 cards)** : Volume m3, Total € HT, Total € TTC, €/m³ HT, €/m³ TTC
+  - **Avec 2023/2024 (2 cards)** : €/m³ HT, €/m³ TTC uniquement
 - Couleurs : vert (baisse), rouge (hausse)
-- Filtrage dynamique : seuls les mois avec données pour les deux périodes sont comparables
+- Grille responsive : `row-cols-1 row-cols-md-3 row-cols-lg-5` (ou lg-2 si 2023/2024)
+- **Logique de comparaison** : l'évolution est toujours calculée par rapport à la Période 1 (référence)
 
 ### Formulaire nouvelle facture (/factures/new)
 - Sélection période budgétaire

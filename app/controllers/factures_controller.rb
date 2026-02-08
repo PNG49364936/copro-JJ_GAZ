@@ -97,18 +97,25 @@ class FacturesController < ApplicationController
         @periodes_total_only[code] = facture_total
       end
 
+      mois_disponibles = []
+      @mois_comparaison.each do |mois_nom, mois_code|
+        if Facture.exists?(periode_budgetaire: code, periode: mois_code)
+          mois_disponibles << mois_code
+        end
+      end
+
+      # Une année est complète si 7 mois renseignés OU période "total only"
+      mois_requis = %w[octobre novembre decembre janvier fevrier mars avril]
+      annee_complete = is_total_only || (mois_disponibles & mois_requis).size == 7
+
       @donnees_disponibles[code] = {
         nom: nom,
         has_octobre: Facture.exists?(periode_budgetaire: code, periode: "octobre"),
         is_total_only: is_total_only,
-        mois_disponibles: []
+        mois_disponibles: mois_disponibles,
+        annee_complete: annee_complete,
+        nb_mois: mois_disponibles.size
       }
-
-      @mois_comparaison.each do |mois_nom, mois_code|
-        if Facture.exists?(periode_budgetaire: code, periode: mois_code)
-          @donnees_disponibles[code][:mois_disponibles] << mois_code
-        end
-      end
     end
 
     # Périodes comparables (ont au moins octobre OU sont "total only")
@@ -124,13 +131,19 @@ class FacturesController < ApplicationController
     end
 
     # Paramètres de comparaison
+    @mode_comparaison = params[:mode_comparaison] || "periodes"
     @periode1 = params[:periode1]
     @periode2 = params[:periode2]
     @mois_debut = params[:mois_debut]
     @mois_fin = params[:mois_fin]
 
     # Calcul des résultats si paramètres présents
-    if @periode1.present? && @periode2.present? && @mois_debut.present? && @mois_fin.present?
+    if @mode_comparaison == "annees" && @periode1.present? && @periode2.present?
+      # Mode années complètes : automatiquement octobre à avril
+      @resultats = calculer_comparaison(@periode1, @periode2, "octobre", "avril")
+      @mois_debut = "octobre"
+      @mois_fin = "avril"
+    elsif @periode1.present? && @periode2.present? && @mois_debut.present? && @mois_fin.present?
       @resultats = calculer_comparaison(@periode1, @periode2, @mois_debut, @mois_fin)
     end
   end

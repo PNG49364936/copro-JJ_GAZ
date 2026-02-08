@@ -1,65 +1,123 @@
 <h1 class="mb-4">Comparaison des périodes budgétaires</h1>
 
-<div class="card mb-4">
-  <div class="card-header bg-primary text-white">
-    <h5 class="mb-0">Sélection des périodes à comparer</h5>
-  </div>
-  <div class="card-body">
-    <%= form_with url: tableau_comparaison_path, method: :get, local: true do |f| %>
-      <div class="row">
-        <div class="col-md-3">
-          <label class="form-label fw-bold">Période 1 (référence)</label>
-          <select name="periode1" id="periode1" class="form-select" required onchange="updateMoisOptions()">
-            <option value="">Sélectionnez...</option>
-            <% @periodes_comparables.each do |code, data| %>
-              <option value="<%= code %>"
-                      data-mois="<%= data[:mois_disponibles].to_json %>"
-                      <%= 'disabled' if code == '2023_2024' %>
-                      <%= 'selected' if @periode1 == code %>
-                      <%= 'style=background-color:#f8f9fa;color:#6c757d;' if code == '2023_2024' %>>
-                <%= data[:nom] %>
-              </option>
-            <% end %>
-          </select>
-        </div>
-        <div class="col-md-3">
-          <label class="form-label fw-bold">Période 2 (comparée)</label>
-          <select name="periode2" id="periode2" class="form-select" required onchange="updateMoisOptions()">
-            <option value="">Sélectionnez...</option>
-            <% @periodes_comparables.each do |code, data| %>
-              <option value="<%= code %>"
-                      data-mois="<%= data[:mois_disponibles].to_json %>"
-                      <%= 'disabled' if code == '2023_2024' %>
-                      <%= 'selected' if @periode2 == code %>
-                      <%= 'style=background-color:#f8f9fa;color:#6c757d;' if code == '2023_2024' %>>
-                <%= data[:nom] %>
-              </option>
-            <% end %>
-          </select>
-        </div>
-        <div class="col-md-2">
-          <label class="form-label fw-bold">Mois début</label>
-          <select name="mois_debut" id="mois_debut" class="form-select" required onchange="updateMoisFin()">
-            <option value="">Sélectionnez...</option>
-            <% @mois_comparaison.each do |nom, code| %>
-              <option value="<%= code %>" <%= 'selected' if @mois_debut == code %>><%= nom %></option>
-            <% end %>
-          </select>
-        </div>
-        <div class="col-md-2">
-          <label class="form-label fw-bold">Mois fin</label>
-          <select name="mois_fin" id="mois_fin" class="form-select" required>
-            <option value="">Sélectionnez...</option>
-            <% @mois_comparaison.each do |nom, code| %>
-              <option value="<%= code %>" <%= 'selected' if @mois_fin == code %>><%= nom %></option>
-            <% end %>
-          </select>
-        </div>
-        <div class="col-md-2 d-flex align-items-end">
-          <button type="submit" class="btn btn-primary w-100">Comparer</button>
+<div class="row">
+  <!-- Comparaison par années complètes -->
+  <div class="col-md-6">
+    <div class="card mb-4">
+      <div class="card-header bg-success text-white">
+        <h5 class="mb-0">Années complètes à comparer</h5>
+      </div>
+      <div class="card-body">
+        <%= form_with url: tableau_comparaison_path, method: :get, local: true, onsubmit: "return validerComparaisonAnnees();" do |f| %>
+          <input type="hidden" name="mode_comparaison" value="annees">
+          <div class="row">
+            <div class="col-6">
+              <label class="form-label fw-bold">Année 1 (référence)</label>
+              <select name="periode1" id="annee1" class="form-select" required>
+                <option value="">Sélectionnez...</option>
+                <% @donnees_disponibles.each do |code, data| %>
+                  <option value="<%= code %>"
+                          <%= 'selected' if @mode_comparaison == 'annees' && @periode1 == code %>
+                          <%= 'disabled' unless data[:annee_complete] %>
+                          <%= 'style=background-color:#f8f9fa;color:#6c757d;' unless data[:annee_complete] %>>
+                    <%= data[:nom] %><%= ' (Total)' if data[:is_total_only] %><%= " (#{data[:nb_mois]}/7 mois)" unless data[:annee_complete] || data[:is_total_only] %>
+                  </option>
+                <% end %>
+              </select>
+            </div>
+            <div class="col-6">
+              <label class="form-label fw-bold">Année 2 (comparée)</label>
+              <select name="periode2" id="annee2" class="form-select" required>
+                <option value="">Sélectionnez...</option>
+                <% @donnees_disponibles.each do |code, data| %>
+                  <option value="<%= code %>"
+                          <%= 'selected' if @mode_comparaison == 'annees' && @periode2 == code %>
+                          <%= 'disabled' unless data[:annee_complete] %>
+                          <%= 'style=background-color:#f8f9fa;color:#6c757d;' unless data[:annee_complete] %>>
+                    <%= data[:nom] %><%= ' (Total)' if data[:is_total_only] %><%= " (#{data[:nb_mois]}/7 mois)" unless data[:annee_complete] || data[:is_total_only] %>
+                  </option>
+                <% end %>
+              </select>
+            </div>
+          </div>
+          <div class="mt-3">
+            <button type="submit" class="btn btn-success w-100">Comparer années</button>
+          </div>
+        <% end %>
+        <div class="alert alert-info mt-2 mb-0 py-2" style="font-size: 0.85rem;">
+          Périodes grisées : mois incomplets (7/7 requis)
         </div>
       </div>
-    <% end %>
+    </div>
+  </div>
+
+  <!-- Comparaison par périodes personnalisées -->
+  <div class="col-md-6">
+    <div class="card mb-4">
+      <div class="card-header bg-primary text-white">
+        <h5 class="mb-0">Périodes personnalisées</h5>
+      </div>
+      <div class="card-body">
+        <%= form_with url: tableau_comparaison_path, method: :get, local: true, onsubmit: "return validerComparaison();" do |f| %>
+          <input type="hidden" name="mode_comparaison" value="periodes">
+          <div class="row">
+            <div class="col-6">
+              <label class="form-label fw-bold">Période 1 (réf.)</label>
+              <select name="periode1" id="periode1" class="form-select" required onchange="updateMoisOptions()">
+                <option value="">Sélectionnez...</option>
+                <% @periodes_comparables.each do |code, data| %>
+                  <option value="<%= code %>"
+                          data-mois="<%= data[:mois_disponibles].to_json %>"
+                          <%= 'disabled' if code == '2023_2024' %>
+                          <%= 'selected' if @mode_comparaison == 'periodes' && @periode1 == code %>
+                          <%= 'style=background-color:#f8f9fa;color:#6c757d;' if code == '2023_2024' %>>
+                    <%= data[:nom] %>
+                  </option>
+                <% end %>
+              </select>
+            </div>
+            <div class="col-6">
+              <label class="form-label fw-bold">Période 2 (comp.)</label>
+              <select name="periode2" id="periode2" class="form-select" required onchange="updateMoisOptions()">
+                <option value="">Sélectionnez...</option>
+                <% @periodes_comparables.each do |code, data| %>
+                  <option value="<%= code %>"
+                          data-mois="<%= data[:mois_disponibles].to_json %>"
+                          <%= 'disabled' if code == '2023_2024' %>
+                          <%= 'selected' if @mode_comparaison == 'periodes' && @periode2 == code %>
+                          <%= 'style=background-color:#f8f9fa;color:#6c757d;' if code == '2023_2024' %>>
+                    <%= data[:nom] %>
+                  </option>
+                <% end %>
+              </select>
+            </div>
+          </div>
+          <div class="row mt-2">
+            <div class="col-6">
+              <label class="form-label fw-bold">Mois début</label>
+              <select name="mois_debut" id="mois_debut" class="form-select" required onchange="updateMoisFin()">
+                <option value="">Sélectionnez...</option>
+                <% @mois_comparaison.each do |nom, code| %>
+                  <option value="<%= code %>" <%= 'selected' if @mois_debut == code %>><%= nom %></option>
+                <% end %>
+              </select>
+            </div>
+            <div class="col-6">
+              <label class="form-label fw-bold">Mois fin</label>
+              <select name="mois_fin" id="mois_fin" class="form-select" required>
+                <option value="">Sélectionnez...</option>
+                <% @mois_comparaison.each do |nom, code| %>
+                  <option value="<%= code %>" <%= 'selected' if @mois_fin == code %>><%= nom %></option>
+                <% end %>
+              </select>
+            </div>
+          </div>
+          <div class="mt-3">
+            <button type="submit" class="btn btn-primary w-100">Comparer périodes</button>
+          </div>
+        <% end %>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -76,6 +134,10 @@
       'janvier' => 'Jan', 'fevrier' => 'Fév', 'mars' => 'Mar', 'avril' => 'Avr'
     }
     periode_abrev = ->(nom) { nom.gsub('20', '').gsub('/', '-') }
+    # Exception 2023/2024 : ne pas comparer Vol, HT, TTC (données non comparables)
+    has_2023_2024 = @periode1 == '2023_2024' || @periode2 == '2023_2024'
+    colonnes = has_2023_2024 ? [:m3_ht, :m3_ttc] : [:volume, :vol_ht, :total_ttc, :m3_ht, :m3_ttc]
+    nb_colonnes = colonnes.size
   %>
 
   <div class="card mb-4">
@@ -97,16 +159,18 @@
             <tr>
               <th class="periode-col"></th>
               <% @resultats[:mois_range].each do |mois| %>
-                <th class="text-center" colspan="5"><%= mois_abrev[mois] %></th>
+                <th class="text-center" colspan="<%= nb_colonnes %>"><%= mois_abrev[mois] %></th>
               <% end %>
-              <th class="text-center table-primary" colspan="5">TOT</th>
+              <th class="text-center table-primary" colspan="<%= nb_colonnes %>">TOT</th>
             </tr>
             <tr class="table-secondary">
               <th class="periode-col"></th>
               <% (@resultats[:mois_range].size + 1).times do %>
-                <th class="text-center">Vol</th>
-                <th class="text-center">HT</th>
-                <th class="text-center">TTC</th>
+                <% unless has_2023_2024 %>
+                  <th class="text-center">Vol</th>
+                  <th class="text-center">HT</th>
+                  <th class="text-center">TTC</th>
+                <% end %>
                 <th class="text-center">€m3/HT</th>
                 <th class="text-center">€m3TTC</th>
               <% end %>
@@ -119,28 +183,30 @@
                 <% @resultats[:mois_range].each do |mois| %>
                   <% if @resultats[periode_key][:is_total_only] %>
                     <%# Période avec données totales uniquement - colonnes grisées %>
-                    <td class="text-center text-muted bg-secondary bg-opacity-10">-</td>
-                    <td class="text-center text-muted bg-secondary bg-opacity-10">-</td>
-                    <td class="text-center text-muted bg-secondary bg-opacity-10">-</td>
-                    <td class="text-center text-muted bg-secondary bg-opacity-10">-</td>
-                    <td class="text-center text-muted bg-secondary bg-opacity-10">-</td>
+                    <% nb_colonnes.times do %>
+                      <td class="text-center text-muted bg-secondary bg-opacity-10">-</td>
+                    <% end %>
                   <% else %>
                     <% data = @resultats[periode_key][:mois][mois] %>
                     <% if data %>
-                      <td class="text-end"><%= number_with_precision(data[:volume], precision: 0, delimiter: "") %></td>
-                      <td class="text-end"><%= number_with_precision(data[:vol_ht], precision: 0, delimiter: "") %></td>
-                      <td class="text-end"><%= number_with_precision(data[:total_ttc], precision: 0, delimiter: "") %></td>
+                      <% unless has_2023_2024 %>
+                        <td class="text-end"><%= number_with_precision(data[:volume], precision: 0, delimiter: "") %></td>
+                        <td class="text-end"><%= number_with_precision(data[:vol_ht], precision: 0, delimiter: "") %></td>
+                        <td class="text-end"><%= number_with_precision(data[:total_ttc], precision: 0, delimiter: "") %></td>
+                      <% end %>
                       <td class="text-end"><%= number_with_precision(data[:m3_ht], precision: 2) %></td>
                       <td class="text-end"><%= number_with_precision(data[:m3_ttc], precision: 2) %></td>
                     <% else %>
-                      <td colspan="5" class="text-center text-muted">-</td>
+                      <td colspan="<%= nb_colonnes %>" class="text-center text-muted">-</td>
                     <% end %>
                   <% end %>
                 <% end %>
                 <% totaux = @resultats[periode_key][:totaux] %>
-                <td class="text-end fw-bold table-primary"><%= number_with_precision(totaux[:volume], precision: 0, delimiter: "") %></td>
-                <td class="text-end fw-bold table-primary"><%= number_with_precision(totaux[:vol_ht], precision: 0, delimiter: "") %></td>
-                <td class="text-end fw-bold table-primary"><%= number_with_precision(totaux[:total_ttc], precision: 0, delimiter: "") %></td>
+                <% unless has_2023_2024 %>
+                  <td class="text-end fw-bold table-primary"><%= number_with_precision(totaux[:volume], precision: 0, delimiter: "") %></td>
+                  <td class="text-end fw-bold table-primary"><%= number_with_precision(totaux[:vol_ht], precision: 0, delimiter: "") %></td>
+                  <td class="text-end fw-bold table-primary"><%= number_with_precision(totaux[:total_ttc], precision: 0, delimiter: "") %></td>
+                <% end %>
                 <td class="text-end fw-bold table-primary"><%= number_with_precision(totaux[:m3_ht], precision: 2) %></td>
                 <td class="text-end fw-bold table-primary"><%= number_with_precision(totaux[:m3_ttc], precision: 2) %></td>
               </tr>
@@ -151,18 +217,18 @@
                 <% data1 = @resultats[:periode1][:mois][mois] %>
                 <% data2 = @resultats[:periode2][:mois][mois] %>
                 <% if data1 && data2 %>
-                  <% [:volume, :vol_ht, :total_ttc, :m3_ht, :m3_ttc].each do |key| %>
+                  <% colonnes.each do |key| %>
                     <% ecart = data2[key] - data1[key] %>
                     <td class="text-end <%= ecart > 0 ? 'text-danger' : 'text-success' %>">
                       <%= ecart > 0 ? '+' : '' %><%= number_with_precision(ecart, precision: key.to_s.include?('m3') ? 2 : 0, delimiter: "") %>
                     </td>
                   <% end %>
                 <% else %>
-                  <td colspan="5" class="text-center text-muted">-</td>
+                  <td colspan="<%= nb_colonnes %>" class="text-center text-muted">-</td>
                 <% end %>
               <% end %>
               <% ecarts = @resultats[:ecarts] %>
-              <% [:volume, :vol_ht, :total_ttc, :m3_ht, :m3_ttc].each do |key| %>
+              <% colonnes.each do |key| %>
                 <td class="text-end fw-bold <%= ecarts[key] > 0 ? 'text-danger' : 'text-success' %>">
                   <%= ecarts[key] > 0 ? '+' : '' %><%= number_with_precision(ecarts[key], precision: key.to_s.include?('m3') ? 2 : 0, delimiter: "") %>
                 </td>
@@ -174,18 +240,18 @@
                 <% data1 = @resultats[:periode1][:mois][mois] %>
                 <% data2 = @resultats[:periode2][:mois][mois] %>
                 <% if data1 && data2 %>
-                  <% [:volume, :vol_ht, :total_ttc, :m3_ht, :m3_ttc].each do |key| %>
+                  <% colonnes.each do |key| %>
                     <% pct = data1[key] != 0 ? ((data2[key] - data1[key]) / data1[key] * 100) : 0 %>
                     <td class="text-end <%= pct > 0 ? 'text-danger' : 'text-success' %>">
                       <%= pct > 0 ? '+' : '' %><%= number_with_precision(pct, precision: 0) %>%
                     </td>
                   <% end %>
                 <% else %>
-                  <td colspan="5" class="text-center text-muted">-</td>
+                  <td colspan="<%= nb_colonnes %>" class="text-center text-muted">-</td>
                 <% end %>
               <% end %>
               <% evolution = @resultats[:evolution] %>
-              <% [:volume, :vol_ht, :total_ttc, :m3_ht, :m3_ttc].each do |key| %>
+              <% colonnes.each do |key| %>
                 <td class="text-end fw-bold <%= evolution[key] > 0 ? 'text-danger' : 'text-success' %>">
                   <%= evolution[key] > 0 ? '+' : '' %><%= number_with_precision(evolution[key], precision: 0) %>%
                 </td>
@@ -197,47 +263,49 @@
     </div>
   </div>
 
-  <!-- Résumé visuel -->Sélection des périodes à comparer
-  <div class="row row-cols-1 row-cols-md-3 row-cols-lg-5">
-    <div class="col">
-      <div class="card <%= @resultats[:ecarts][:volume] > 0 ? 'border-danger' : 'border-success' %>">
-        <div class="card-body text-center">
-          <h6>Évolution Volume m3</h6>
-          <p class="display-6 <%= @resultats[:evolution][:volume] > 0 ? 'text-danger' : 'text-success' %>">
-            <%= @resultats[:evolution][:volume] > 0 ? '+' : '' %><%= number_with_precision(@resultats[:evolution][:volume], precision: 1) %>%
-          </p>
-          <small class="text-muted">
-            <%= number_with_precision(@resultats[:ecarts][:volume], precision: 0, delimiter: " ") %> m³
-          </small>
+  <!-- Résumé visuel -->
+  <div class="row row-cols-1 row-cols-md-<%= has_2023_2024 ? '2' : '3' %> row-cols-lg-<%= has_2023_2024 ? '2' : '5' %>">
+    <% unless has_2023_2024 %>
+      <div class="col">
+        <div class="card <%= @resultats[:ecarts][:volume] > 0 ? 'border-danger' : 'border-success' %>">
+          <div class="card-body text-center">
+            <h6>Évolution Volume m3</h6>
+            <p class="display-6 <%= @resultats[:evolution][:volume] > 0 ? 'text-danger' : 'text-success' %>">
+              <%= @resultats[:evolution][:volume] > 0 ? '+' : '' %><%= number_with_precision(@resultats[:evolution][:volume], precision: 1) %>%
+            </p>
+            <small class="text-muted">
+              <%= number_with_precision(@resultats[:ecarts][:volume], precision: 0, delimiter: " ") %> m³
+            </small>
+          </div>
         </div>
       </div>
-    </div>
-    <div class="col">
-      <div class="card <%= @resultats[:ecarts][:vol_ht] > 0 ? 'border-danger' : 'border-success' %>">
-        <div class="card-body text-center">
-          <h6>Évolution Total € HT</h6>
-          <p class="display-6 <%= @resultats[:evolution][:vol_ht] > 0 ? 'text-danger' : 'text-success' %>">
-            <%= @resultats[:evolution][:vol_ht] > 0 ? '+' : '' %><%= number_with_precision(@resultats[:evolution][:vol_ht], precision: 1) %>%
-          </p>
-          <small class="text-muted">
-            <%= number_with_precision(@resultats[:ecarts][:vol_ht], precision: 0, delimiter: " ") %> €
-          </small>
+      <div class="col">
+        <div class="card <%= @resultats[:ecarts][:vol_ht] > 0 ? 'border-danger' : 'border-success' %>">
+          <div class="card-body text-center">
+            <h6>Évolution Total € HT</h6>
+            <p class="display-6 <%= @resultats[:evolution][:vol_ht] > 0 ? 'text-danger' : 'text-success' %>">
+              <%= @resultats[:evolution][:vol_ht] > 0 ? '+' : '' %><%= number_with_precision(@resultats[:evolution][:vol_ht], precision: 1) %>%
+            </p>
+            <small class="text-muted">
+              <%= number_with_precision(@resultats[:ecarts][:vol_ht], precision: 0, delimiter: " ") %> €
+            </small>
+          </div>
         </div>
       </div>
-    </div>
-    <div class="col">
-      <div class="card <%= @resultats[:ecarts][:total_ttc] > 0 ? 'border-danger' : 'border-success' %>">
-        <div class="card-body text-center">
-          <h6>Évolution Total € TTC</h6>
-          <p class="display-6 <%= @resultats[:evolution][:total_ttc] > 0 ? 'text-danger' : 'text-success' %>">
-            <%= @resultats[:evolution][:total_ttc] > 0 ? '+' : '' %><%= number_with_precision(@resultats[:evolution][:total_ttc], precision: 1) %>%
-          </p>
-          <small class="text-muted">
-            <%= number_with_precision(@resultats[:ecarts][:total_ttc], precision: 0, delimiter: " ") %> €
-          </small>
+      <div class="col">
+        <div class="card <%= @resultats[:ecarts][:total_ttc] > 0 ? 'border-danger' : 'border-success' %>">
+          <div class="card-body text-center">
+            <h6>Évolution Total € TTC</h6>
+            <p class="display-6 <%= @resultats[:evolution][:total_ttc] > 0 ? 'text-danger' : 'text-success' %>">
+              <%= @resultats[:evolution][:total_ttc] > 0 ? '+' : '' %><%= number_with_precision(@resultats[:evolution][:total_ttc], precision: 1) %>%
+            </p>
+            <small class="text-muted">
+              <%= number_with_precision(@resultats[:ecarts][:total_ttc], precision: 0, delimiter: " ") %> €
+            </small>
+          </div>
         </div>
       </div>
-    </div>
+    <% end %>
     <div class="col">
       <div class="card <%= @resultats[:ecarts][:m3_ht] > 0 ? 'border-danger' : 'border-success' %>">
         <div class="card-body text-center">
@@ -278,6 +346,28 @@ const moisNoms = {
   'mars': 'Mars',
   'avril': 'Avril'
 };
+
+function validerComparaison() {
+  const periode1 = document.getElementById('periode1').value;
+  const periode2 = document.getElementById('periode2').value;
+
+  if (periode1 && periode2 && periode1 === periode2) {
+    alert('Attention vous comparez les mêmes périodes');
+    return false;
+  }
+  return true;
+}
+
+function validerComparaisonAnnees() {
+  const annee1 = document.getElementById('annee1').value;
+  const annee2 = document.getElementById('annee2').value;
+
+  if (annee1 && annee2 && annee1 === annee2) {
+    alert('Attention vous comparez les mêmes années');
+    return false;
+  }
+  return true;
+}
 
 function updateMoisOptions() {
   const periode1Select = document.getElementById('periode1');

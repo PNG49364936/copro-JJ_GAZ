@@ -6,13 +6,14 @@
       <tr class="table-dark text-center">
         <th rowspan="2" class="align-middle" style="min-width: 100px;">Période</th>
         <% @mois.each do |nom, code| %>
-          <% next if code == "septembre" || code == "mai" %>
+          <% next if code == "septembre" || code == "mai" || code == "total" %>
           <th colspan="5" class="text-center"><%= nom.upcase %></th>
         <% end %>
         <th colspan="5" class="text-center table-primary">TOTAL</th>
       </tr>
       <tr class="table-secondary text-center">
-        <% (@mois.size - 2).times do %>
+        <% @mois.each do |nom, code| %>
+          <% next if code == "septembre" || code == "mai" || code == "total" %>
           <th style="min-width: 70px;">Volume</th>
           <th style="min-width: 70px;">Vol HT</th>
           <th style="min-width: 80px;">Total TTC</th>
