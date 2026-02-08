@@ -336,18 +336,19 @@
 <% end %>
 
 <script>
-const moisOrdre = ['octobre', 'novembre', 'decembre', 'janvier', 'fevrier', 'mars', 'avril'];
-const moisNoms = {
-  'octobre': 'Octobre',
-  'novembre': 'Novembre',
-  'decembre': 'Décembre',
-  'janvier': 'Janvier',
-  'fevrier': 'Février',
-  'mars': 'Mars',
-  'avril': 'Avril'
-};
+(function() {
+  const moisOrdre = ['octobre', 'novembre', 'decembre', 'janvier', 'fevrier', 'mars', 'avril'];
+  const moisNoms = {
+    'octobre': 'Octobre',
+    'novembre': 'Novembre',
+    'decembre': 'Décembre',
+    'janvier': 'Janvier',
+    'fevrier': 'Février',
+    'mars': 'Mars',
+    'avril': 'Avril'
+  };
 
-function validerComparaison() {
+  window.validerComparaison = function() {
   const periode1 = document.getElementById('periode1').value;
   const periode2 = document.getElementById('periode2').value;
 
@@ -358,7 +359,7 @@ function validerComparaison() {
   return true;
 }
 
-function validerComparaisonAnnees() {
+window.validerComparaisonAnnees = function() {
   const annee1 = document.getElementById('annee1').value;
   const annee2 = document.getElementById('annee2').value;
 
@@ -369,7 +370,7 @@ function validerComparaisonAnnees() {
   return true;
 }
 
-function updateMoisOptions() {
+window.updateMoisOptions = function() {
   const periode1Select = document.getElementById('periode1');
   const periode2Select = document.getElementById('periode2');
   const moisDebutSelect = document.getElementById('mois_debut');
@@ -409,7 +410,7 @@ function updateMoisOptions() {
   updateMoisFin();
 }
 
-function updateMoisFin() {
+window.updateMoisFin = function() {
   const periode1Select = document.getElementById('periode1');
   const periode2Select = document.getElementById('periode2');
   const moisDebutSelect = document.getElementById('mois_debut');
@@ -456,6 +457,7 @@ function updateMoisFin() {
 }
 
 document.addEventListener('DOMContentLoaded', function() {
-  updateMoisOptions();
+  window.updateMoisOptions();
 });
+})();
 </script>
