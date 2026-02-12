@@ -282,7 +282,7 @@
       <div class="col">
         <div class="card <%= @resultats[:ecarts][:vol_ht] > 0 ? 'border-danger' : 'border-success' %>">
           <div class="card-body text-center">
-            <h6>Évolution Total € HT</h6>
+            <h6>Évolution Total € brut</h6>
             <p class="display-6 <%= @resultats[:evolution][:vol_ht] > 0 ? 'text-danger' : 'text-success' %>">
               <%= @resultats[:evolution][:vol_ht] > 0 ? '+' : '' %><%= number_with_precision(@resultats[:evolution][:vol_ht], precision: 1) %>%
             </p>
@@ -295,7 +295,7 @@
       <div class="col">
         <div class="card <%= @resultats[:ecarts][:total_ttc] > 0 ? 'border-danger' : 'border-success' %>">
           <div class="card-body text-center">
-            <h6>Évolution Total € TTC</h6>
+            <h6>Évolution Total € net</h6>
             <p class="display-6 <%= @resultats[:evolution][:total_ttc] > 0 ? 'text-danger' : 'text-success' %>">
               <%= @resultats[:evolution][:total_ttc] > 0 ? '+' : '' %><%= number_with_precision(@resultats[:evolution][:total_ttc], precision: 1) %>%
             </p>
@@ -309,7 +309,7 @@
     <div class="col">
       <div class="card <%= @resultats[:ecarts][:m3_ht] > 0 ? 'border-danger' : 'border-success' %>">
         <div class="card-body text-center">
-          <h6>Évolution €/m³ HT</h6>
+          <h6>Évolution €/m³ brut</h6>
           <p class="display-6 <%= @resultats[:evolution][:m3_ht] > 0 ? 'text-danger' : 'text-success' %>">
             <%= @resultats[:evolution][:m3_ht] > 0 ? '+' : '' %><%= number_with_precision(@resultats[:evolution][:m3_ht], precision: 1) %>%
           </p>
@@ -322,7 +322,7 @@
     <div class="col">
       <div class="card <%= @resultats[:ecarts][:m3_ttc] > 0 ? 'border-danger' : 'border-success' %>">
         <div class="card-body text-center">
-          <h6>Évolution €/m³ TTC</h6>
+          <h6>Évolution €/m³ net</h6>
           <p class="display-6 <%= @resultats[:evolution][:m3_ttc] > 0 ? 'text-danger' : 'text-success' %>">
             <%= @resultats[:evolution][:m3_ttc] > 0 ? '+' : '' %><%= number_with_precision(@resultats[:evolution][:m3_ttc], precision: 1) %>%
           </p>
